@@ -181,29 +181,53 @@ function selectPreviewNode(node) {
   if (node) node.style.backgroundColor = '#ACCEF7';
 }
 
-// preview.addEventListener("click", e => {
-//   unselectAll();
-//   target = getPreviewTarget(e.target);
-//   if (!target) return;
-//   // selectPreviewNode(target);
-//   // select in source
-//   let pos = indexToPosition(target.getAttribute('beginloc'));
-//   source.clearSelection();
-//   source.moveCursorTo(pos.row, pos.column);
-//   source.focus();
-// });
+let selectingPreview = false;
+let anchorIndex = 0;
+
+preview.addEventListener("mousedown", e => {
+  // unselectAll();
+  target = getPreviewTarget(e.target);
+  if (!target) return;
+  selectingPreview = true;
+  anchorIndex = parseInt(target.getAttribute('beginloc'));
+  // selectPreviewNode(target);
+  // select in source
+  let pos = indexToPosition(anchorIndex);
+  source.clearSelection();
+  sourceSelection.setSelectionAnchor(pos.row, pos.column);
+  // source.focus();
+});
+
+preview.addEventListener("mouseup", e => {
+  if (!selectingPreview) return;
+  selectingPreview = false;
+  target = getPreviewTarget(e.target);
+  source.focus();
+});
 
 preview.addEventListener("mousemove", e => {
-  unselectAll();
-  let target = getPreviewTarget(e.target);
-  if (target) {
-    selectPreviewNode(target);
-    selectionBegin = parseInt(target.getAttribute('beginloc'));
-    selectionEnd = parseInt(target.getAttribute('endloc'));
+  if (selectingPreview) {
+    let target = getPreviewTarget(e.target);
+    if (target) {
+      // selectPreviewNode(target);
+      let b = parseInt(target.getAttribute('beginloc'));
+      let e = parseInt(target.getAttribute('endloc'));
+      let pos = indexToPosition(b);
+      source.moveCursorTo(pos.row, pos.column);
+    }
+  } else {
+    unselectAll();
+    let target = getPreviewTarget(e.target);
+    if (target) {
+      selectPreviewNode(target);
+      selectionBegin = parseInt(target.getAttribute('beginloc'));
+      selectionEnd = parseInt(target.getAttribute('endloc'));
+    }
   }
 });
 
 preview.addEventListener("mouseleave", e => {
+  selectingPreview = false;
   forwardSelection();
 });
 
