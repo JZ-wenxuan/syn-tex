@@ -4,7 +4,6 @@
 
 const ace = require('brace');
 require('brace/mode/latex');
-// require('brace/theme/monokai');
  
 const source = ace.edit('source');
 source.session.setMode('ace/mode/latex');
@@ -15,7 +14,6 @@ source.session.setUseWrapMode(true);
 //   autoScrollEditorIntoView: true,
 //   maxLines: 20
 // });
-// source.setTheme('ace/theme/monokai');
 source.renderer.setScrollMargin(10, 10, 10, 10);
 const sourceSelection = source.getSelection();
 
@@ -45,7 +43,6 @@ const preview = document.getElementById('preview');
 let renderTime = 0;
 let renderCount = 0;
 let rendered = false;
-let index = [];
 
 function render() {
   let start = performance.now();
@@ -67,9 +64,6 @@ function render() {
   renderTime = performance.now() - start;
 }
 
-render();
-
-
 async function sourceUpdate() {
   rendered = false;
   renderCount++;
@@ -82,6 +76,9 @@ source.addEventListener('change', sourceUpdate);
 
 
 // ************************* Index Construction *************************
+
+
+let index = [];
 
 function indexNode(node, parentBegin, parentEnd) {
   let thisBegin, thisEnd;
@@ -131,30 +128,38 @@ function indexToPosition(i) {
 }
 
 sourceSelection.addEventListener('changeCursor', forwardSelection)
-// sourceSelection.addEventListener('changeSelectionStyle', forwardSelection)
-// sourceSelection.addEventListener('changeSelection', forwardSelection)
+sourceSelection.addEventListener('changeSelection', forwardSelection)
 source.addEventListener('focus', forwardSelection);
 
+let selectionBegin = 0;
+let selectionEnd = 0;
+
 function forwardSelection() {
-  unselectPreview();
+  // unselectAllPreview();
   if (!rendered) return;
-  let i = positionToIndex(sourceSelection.getSelectionLead());
-  let j = positionToIndex(sourceSelection.getSelectionAnchor());
-  if (i > j) [i, j] = [j, i];
-  for (; i <= j; i++) {
-    let node = index[i];
-    if (node) selectPreviewNode(node);
+  let b = positionToIndex(sourceSelection.getSelectionLead());
+  let e = positionToIndex(sourceSelection.getSelectionAnchor());
+  if (b > e) [b, e] = [e, b]; else if (b === e) e++;
+  for (let i = selectionBegin; i < b && i < selectionEnd; i++) {
+    unselectPreviewNode(index[i]);
   }
+  for (let i = b; i < selectionBegin && i < e; i++) {
+    selectPreviewNode(index[i]);
+  }
+  for (let i = Math.max(e, selectionBegin); i < selectionEnd && i; i++) {
+    unselectPreviewNode(index[i]);
+  }
+  for (let i = Math.max(selectionEnd, b); i < e; i++) {
+    selectPreviewNode(index[i]);
+  }
+  selectionBegin = b;
+  selectionEnd = e;
 }
-
-// function backwardSelection() {
-
-// }
 
 function getPreviewTarget(target) {
   while (target.nodeName !== 'DIV') {
     let beginLoc = target.getAttribute('beginloc');
-    if (beginLoc && beginLoc !== 'null') {
+    if (beginLoc) {
       return target;
     }
     target = target.parentElement;
@@ -162,37 +167,48 @@ function getPreviewTarget(target) {
   return null;
 }
 
-let prev_target = null; 
-
-function unselectPreview(target) {
-  index.map(node => { if (node) node.style.backgroundColor = null; })
+function unselectAll() {
+  for (let i = selectionBegin; i < selectionEnd; i++) {
+    unselectPreviewNode(index[i]);
+  }
 }
 
-function selectPreviewNode(target) {
-  if (!target) return;
-  target.style.backgroundColor = '#ACCEF7';
-  // target.style.transitionProperty = 'background-color'
-  // target.style.transitionDuration = '.08s'
-  prev_target = target;
+function unselectPreviewNode(node) {
+  if (node) node.style.backgroundColor = null;
 }
 
-preview.addEventListener("click", e => {
-  unselectPreview();
-  target = getPreviewTarget(e.target);
-  if (!target) return;
-  // selectPreviewNode(target);
-  // select in source
-  let pos = indexToPosition(target.getAttribute('beginloc'));
-  source.clearSelection();
-  source.moveCursorTo(pos.row, pos.column);
-  source.focus();
-});
+function selectPreviewNode(node) {
+  if (node) node.style.backgroundColor = '#ACCEF7';
+}
+
+// preview.addEventListener("click", e => {
+//   unselectAll();
+//   target = getPreviewTarget(e.target);
+//   if (!target) return;
+//   // selectPreviewNode(target);
+//   // select in source
+//   let pos = indexToPosition(target.getAttribute('beginloc'));
+//   source.clearSelection();
+//   source.moveCursorTo(pos.row, pos.column);
+//   source.focus();
+// });
 
 preview.addEventListener("mousemove", e => {
-  unselectPreview();
-  selectPreviewNode(getPreviewTarget(e.target));
+  unselectAll();
+  let target = getPreviewTarget(e.target);
+  if (target) {
+    selectPreviewNode(target);
+    selectionBegin = parseInt(target.getAttribute('beginloc'));
+    selectionEnd = parseInt(target.getAttribute('endloc'));
+  }
 });
 
 preview.addEventListener("mouseleave", e => {
   forwardSelection();
 });
+
+
+// ************************ Start Rendering ************************
+
+render();
+
