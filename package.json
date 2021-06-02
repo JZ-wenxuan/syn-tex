@@ -1,0 +1,14 @@
+{
+  "name": "my-project",
+  "scripts": {
+    "start": "parcel serve ./src/index.html",
+    "build": "parcel build ./src/index.html"
+  },
+  "dependencies": {
+    "brace": "^0.11.1",
+    "mathjax-full": "file:../MathJax-src"
+  },
+  "devDependencies": {
+    "parcel": "next"
+  }
+}
