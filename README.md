@@ -1,6 +1,6 @@
 # SynTex
 
-A TeX equation editor with interactive selection.
+An interactive TeX equation editor with selection mapping.
 
 ## TODO
 
