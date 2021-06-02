@@ -3,13 +3,14 @@
 // ******************************* Init Ace *******************************
 
 const ace = require('brace');
+const Range = ace.acequire('ace/range').Range;
 require('brace/mode/latex');
- 
+
 const source = ace.edit('source');
 source.session.setMode('ace/mode/latex');
 source.setFontSize('14px');
 source.session.setUseWrapMode(true);
-
+source.$blockScrolling = Infinity;
 // source.setOptions({
 //   autoScrollEditorIntoView: true,
 //   maxLines: 20
@@ -135,7 +136,6 @@ let selectionBegin = 0;
 let selectionEnd = 0;
 
 function forwardSelection() {
-  // unselectAllPreview();
   if (!rendered) return;
   let b = positionToIndex(sourceSelection.getSelectionLead());
   let e = positionToIndex(sourceSelection.getSelectionAnchor());
@@ -143,11 +143,11 @@ function forwardSelection() {
   for (let i = selectionBegin; i < b && i < selectionEnd; i++) {
     unselectPreviewNode(index[i]);
   }
-  for (let i = b; i < selectionBegin && i < e; i++) {
-    selectPreviewNode(index[i]);
-  }
   for (let i = Math.max(e, selectionBegin); i < selectionEnd && i; i++) {
     unselectPreviewNode(index[i]);
+  }
+  for (let i = b; i < selectionBegin && i < e; i++) {
+    selectPreviewNode(index[i]);
   }
   for (let i = Math.max(selectionEnd, b); i < e; i++) {
     selectPreviewNode(index[i]);
@@ -181,21 +181,27 @@ function selectPreviewNode(node) {
   if (node) node.style.backgroundColor = '#ACCEF7';
 }
 
+function selectSourceRange(b, e) {
+  sourceSelection.setSelectionRange(Range.fromPoints(indexToPosition(b), indexToPosition(e)));
+}
+
 let selectingPreview = false;
-let anchorIndex = 0;
+let anchorBegin = 0;
+let anchorEnd = 0;
 
 preview.addEventListener("mousedown", e => {
-  // unselectAll();
   target = getPreviewTarget(e.target);
   if (!target) return;
   selectingPreview = true;
-  anchorIndex = parseInt(target.getAttribute('beginloc'));
-  // selectPreviewNode(target);
-  // select in source
-  let pos = indexToPosition(anchorIndex);
-  source.clearSelection();
-  sourceSelection.setSelectionAnchor(pos.row, pos.column);
-  // source.focus();
+
+  anchorBegin = parseInt(target.getAttribute('beginloc'));
+  anchorEnd = parseInt(target.getAttribute('endloc'));
+
+  selectSourceRange(anchorBegin, anchorEnd);
+  // let posBegin = indexToPosition(anchorBegin);
+  // source.moveCursorTo(posBegin.row, posBegin.column);
+  // let posEnd = indexToPosition(anchorEnd);
+  // sourceSelection.setSelectionAnchor(posEnd.row, posEnd.column);
 });
 
 preview.addEventListener("mouseup", e => {
@@ -209,11 +215,10 @@ preview.addEventListener("mousemove", e => {
   if (selectingPreview) {
     let target = getPreviewTarget(e.target);
     if (target) {
-      // selectPreviewNode(target);
       let b = parseInt(target.getAttribute('beginloc'));
       let e = parseInt(target.getAttribute('endloc'));
-      let pos = indexToPosition(b);
-      source.moveCursorTo(pos.row, pos.column);
+
+      selectSourceRange(Math.min(b, anchorBegin), Math.max(e, anchorEnd));
     }
   } else {
     unselectAll();
