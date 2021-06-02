@@ -6,7 +6,7 @@
   },
   "dependencies": {
     "brace": "^0.11.1",
-    "mathjax-full": "file:../MathJax-src"
+    "mathjax-full": "git+https://github.com/Ayassaka/MathJax-src.git"
   },
   "devDependencies": {
     "parcel": "next"
