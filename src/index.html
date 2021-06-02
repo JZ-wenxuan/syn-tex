@@ -6,9 +6,19 @@
   <meta name="viewport" content="width=600, initial-scale=1.0">
   <title>Synquation POC</title>
   <style>
+    /* body {
+      display: flex;
+      flex-direction: row;
+    } */
+
     #source {
       border: 1px solid lightgray;
       height: 300px;
+      width: 100%;
+    }
+
+    #preview {
+      border: 1px solid lightgray;
       width: 100%;
     }
   </style>
@@ -125,15 +135,13 @@
   </style>
   </head>
 <body>
-  <div id="source">% sample code
+    <div id="source">% sample code
 \begin{aligned}
   & \sum_{i=1}^{d}  \frac{(\theta_{1,i}-\theta_{,i}^{\ast } )^2\sqrt{\hat{v}_{1,i}}}{2\alpha_1(1-\beta_1)}+ \sum_{i=1}^{d}\sum_{t=2}^{T}\frac{(\theta_{t,i}-\theta_{,i}^{\ast } )^2}{2(1-\beta_1)}(\frac{\sqrt{\hat{v}_{t,i}}}{\alpha_t}-\frac{\sqrt{\hat{v}_{t-1,i}}}{\alpha_{t-1}})\\
   \leq~ & \sum_{i=1}^{d}  \frac{D_\infty^2\sqrt{\hat{v}_{1,i}}}{2\alpha_1(1-\beta_1)}+ \sum_{i=1}^{d}\sum_{t=2}^{T}\frac{D_\infty^2}{2(1-\beta_1)}(\frac{\sqrt{\hat{v}_{t,i}}}{\alpha_t}-\frac{\sqrt{\hat{v}_{t-1,i}}}{\alpha_{t-1}})\\
   =~&\frac{D_\infty^2}{2\alpha(1-\beta_1)}\sum_{i=1}^{d}\sqrt{T\hat{v}_{T,i}}.
-\end{aligned}
-  </div>
-
-  <div id="preview"></div>
+\end{aligned}</div>
+    <div id="preview"></div>
   <style id="mjxStyle"></style>
   <script src="./index.js"></script>
 </body>

@@ -17,6 +17,8 @@ source.session.setUseWrapMode(true);
 // });
 // source.setTheme('ace/theme/monokai');
 source.renderer.setScrollMargin(10, 10, 10, 10);
+const sourceSelection = source.getSelection();
+
 
 
 // ***************************** Init MathJax *****************************
@@ -42,6 +44,7 @@ const preview = document.getElementById('preview');
 
 let renderTime = 0;
 let renderCount = 0;
+let rendered = false;
 let index = [];
 
 function render() {
@@ -54,11 +57,13 @@ function render() {
     containerWidth: 80 * 16,
   });
   preview.innerHTML = '';
-  index.length = text.length;
-  index.fill(null);
-  indexNode(node, 0);
   preview.appendChild(node);
   preview.appendChild(chtml.styleSheet(html));
+  index.length = text.length;
+  index.fill(null);
+  indexNode(node, 0, text.length);
+  rendered = true;
+  forwardSelection();
   renderTime = performance.now() - start;
 }
 
@@ -66,6 +71,7 @@ render();
 
 
 async function sourceUpdate() {
+  rendered = false;
   renderCount++;
   let renderId = renderCount;
   await new Promise(resolve => setTimeout(resolve, renderTime));
@@ -77,38 +83,73 @@ source.addEventListener('change', sourceUpdate);
 
 // ************************* Index Construction *************************
 
-function indexNode(node, outerLoc) {
-  for (var i = 0; i < node.childNodes.length; i++) {
-    var child = node.childNodes[i];
-    let loc = node.getAttribute('beginloc');
-    if (loc) {
-      loc = parseInt(loc);
-      if (loc === outerLoc) {
-        node.removeAttribute('beginloc');
-        node.removeAttribute('endloc');
-      } else {
-        outerLoc = loc;
-        index.fill(node, loc, parseInt(node.getAttribute('endloc')));
-      }
+function indexNode(node, parentBegin, parentEnd) {
+  let thisBegin, thisEnd;
+  let realNode = false;
+  let loc = node.getAttribute('beginloc');
+  if (loc) {
+    thisBegin = parseInt(loc);
+    thisEnd = parseInt(node.getAttribute('endloc'));
+    realNode = (thisBegin !== parentBegin || thisEnd !== parentEnd);
+    if (realNode) {
+      parentBegin = thisBegin;
+      parentEnd = thisEnd;
+    } else {
+      node.removeAttribute('beginloc');
+      node.removeAttribute('endloc');
     }
-    indexNode(child, outerLoc);
   }
+  
+  let childBegin = parentEnd;
+  let childEnd = parentBegin;
+  for (var i = 0; i < node.children.length; i++) {
+    var child = node.children[i];
+    [b, e] = indexNode(child, parentBegin, parentEnd);
+    if (b < childBegin) childBegin = b;
+    if (e > childEnd) childEnd = e;
+  }
+  
+  if (realNode) {
+    index.fill(node, thisBegin, childBegin);
+    index.fill(node, childEnd, thisEnd);
+    return [thisBegin, thisEnd];
+  }
+
+  return [childBegin, childEnd];
 }
 
 
 // ************************** User Interaction **************************
 
-let sourceSelection = source.getSelection();
 
-function positionToTarget(pos) {
-  return index[source.getSession().getDocument().positionToIndex(pos)];
+function positionToIndex(pos) {
+  return source.getSession().getDocument().positionToIndex(pos);
 }
 
-sourceSelection.addEventListener('changeCursor', () => {
+function indexToPosition(i) {
+  return source.getSession().getDocument().indexToPosition(i);
+}
+
+sourceSelection.addEventListener('changeCursor', forwardSelection)
+// sourceSelection.addEventListener('changeSelectionStyle', forwardSelection)
+// sourceSelection.addEventListener('changeSelection', forwardSelection)
+source.addEventListener('focus', forwardSelection);
+
+function forwardSelection() {
   unselectPreview();
-  let target = positionToTarget(sourceSelection.getCursor());
-  if (target) selectPreview(target);
-})
+  if (!rendered) return;
+  let i = positionToIndex(sourceSelection.getSelectionLead());
+  let j = positionToIndex(sourceSelection.getSelectionAnchor());
+  if (i > j) [i, j] = [j, i];
+  for (; i <= j; i++) {
+    let node = index[i];
+    if (node) selectPreviewNode(node);
+  }
+}
+
+// function backwardSelection() {
+
+// }
 
 function getPreviewTarget(target) {
   while (target.nodeName !== 'DIV') {
@@ -124,38 +165,34 @@ function getPreviewTarget(target) {
 let prev_target = null; 
 
 function unselectPreview(target) {
-  if (prev_target) {
-    prev_target.style.backgroundColor = null;
-    // source.setSelectionRange(0, 0);
-    prev_target = null;
-  }
+  index.map(node => { if (node) node.style.backgroundColor = null; })
 }
 
-function selectPreview(target) {
-  target = getPreviewTarget(target);
+function selectPreviewNode(target) {
   if (!target) return;
-//   source.setSelectionRange(
-//     parseInt(target.getAttribute('beginloc')),
-//     parseInt(target.getAttribute('endloc')),
-//   );
   target.style.backgroundColor = '#ACCEF7';
-  target.style.transitionProperty = 'background-color'
-  target.style.transitionDuration = '.12s'
+  // target.style.transitionProperty = 'background-color'
+  // target.style.transitionDuration = '.08s'
   prev_target = target;
 }
 
 preview.addEventListener("click", e => {
   unselectPreview();
-  selectPreview(e.target);
-//   source.focus();
+  target = getPreviewTarget(e.target);
+  if (!target) return;
+  // selectPreviewNode(target);
+  // select in source
+  let pos = indexToPosition(target.getAttribute('beginloc'));
+  source.clearSelection();
+  source.moveCursorTo(pos.row, pos.column);
+  source.focus();
 });
 
 preview.addEventListener("mousemove", e => {
   unselectPreview();
-  selectPreview(e.target);
-//   source.focus();
+  selectPreviewNode(getPreviewTarget(e.target));
 });
 
 preview.addEventListener("mouseleave", e => {
-  unselectPreview();
+  forwardSelection();
 });
