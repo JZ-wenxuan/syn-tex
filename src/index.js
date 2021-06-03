@@ -200,6 +200,8 @@ preview.addEventListener("mousedown", e => {
   selectSourceRange(anchorBegin, anchorEnd);
 });
 
+let hoveredPreview = null;
+
 preview.addEventListener("mouseup", e => {
   if (!selectingPreview) return;
   selectingPreview = false;
@@ -208,31 +210,36 @@ preview.addEventListener("mouseup", e => {
 });
 
 preview.addEventListener("mousemove", e => {
+  let target = getPreviewTarget(e.target);
   if (selectingPreview) {
-    let target = getPreviewTarget(e.target);
     if (target) {
       let b = parseInt(target.getAttribute('beginloc'));
       let e = parseInt(target.getAttribute('endloc'));
 
       selectSourceRange(Math.min(b, anchorBegin), Math.max(e, anchorEnd));
     }
-  } else {
-    // unselectAll();
-    // let target = getPreviewTarget(e.target);
-    // if (target) {
-    //   selectPreviewNode(target);
-    //   selectionBegin = parseInt(target.getAttribute('beginloc'));
-    //   selectionEnd = parseInt(target.getAttribute('endloc'));
-    // }
+  }
+  // unselectAll();
+  // let target = getPreviewTarget(e.target);
+  if (hoveredPreview) {
+    hoveredPreview.style.outlineStyle = 'none';
+  }
+  if (target) {
+    hoveredPreview = target;
+    hoveredPreview.style.outlineStyle = 'solid';
+    hoveredPreview.style.outlineWidth = '1px';
+    // hoveredPreview.style.outlineColor = 'lightgray';
   }
 });
 
 preview.addEventListener("mouseleave", e => {
-  // selectingPreview = false;
-  // forwardSelection();
+  if (hoveredPreview) {
+    hoveredPreview.style.outlineStyle = 'none';
+  }
 });
 
 
 // ************************ Start Rendering ************************
 
 source.setValue("% sample code\r\n\\begin{aligned}\r\n  & \\sum_{i=1}^{d}  \\frac{(\\theta_{1,i}-\\theta_{,i}^{\\ast } )^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{(\\theta_{t,i}-\\theta_{,i}^{\\ast } )^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\r\n  \\leq~ & \\sum_{i=1}^{d}  \\frac{D_\\infty^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{D_\\infty^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\r\n  =~&\\frac{D_\\infty^2}{2\\alpha(1-\\beta_1)}\\sum_{i=1}^{d}\\sqrt{T\\hat{v}_{T,i}}.\r\n\\end{aligned}")
+source.clearSelection();
