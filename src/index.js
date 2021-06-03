@@ -191,13 +191,17 @@ let anchorEnd = 0;
 
 preview.addEventListener("mousedown", e => {
   target = getPreviewTarget(e.target);
-  if (!target) return;
-  selectingPreview = true;
-
-  anchorBegin = parseInt(target.getAttribute('beginloc'));
-  anchorEnd = parseInt(target.getAttribute('endloc'));
-
-  selectSourceRange(anchorBegin, anchorEnd);
+  if (!target) {
+    source.clearSelection();
+    source.moveCursorTo(source.getSession().getLength(), 0);
+  } else {
+    selectingPreview = true;
+  
+    anchorBegin = parseInt(target.getAttribute('beginloc'));
+    anchorEnd = parseInt(target.getAttribute('endloc'));
+  
+    selectSourceRange(anchorBegin, anchorEnd);
+  }
 });
 
 let hoveredPreview = null;
@@ -219,8 +223,6 @@ preview.addEventListener("mousemove", e => {
       selectSourceRange(Math.min(b, anchorBegin), Math.max(e, anchorEnd));
     }
   }
-  // unselectAll();
-  // let target = getPreviewTarget(e.target);
   if (hoveredPreview) {
     hoveredPreview.style.outlineStyle = 'none';
   }
@@ -228,7 +230,7 @@ preview.addEventListener("mousemove", e => {
     hoveredPreview = target;
     hoveredPreview.style.outlineStyle = 'solid';
     hoveredPreview.style.outlineWidth = '1px';
-    // hoveredPreview.style.outlineColor = 'lightgray';
+    hoveredPreview.style.outlineColor = 'lightgray';
   }
 });
 
