@@ -1,4 +1,4 @@
-# SynTex
+# [SynTex](https://ayassaka.github.io/syn-tex/)
 
 An interactive TeX equation editor with selection mapping.
 
