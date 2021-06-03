@@ -14,8 +14,7 @@ This project is based on:
 ## TODO
 
 - Backward selection should map to closed braces and environments.
+- CSS work: resizable source and preview.
 - Handle `\left` and `\right`.
-- Further test against different packages and environments.
-- Make source editor resizable.
-- Make preview fit to container.
-- Fix: dragging sometimes doesn't trigger backward selection.
+- Fix: fast dragging sometimes doesn't trigger backward selection.
+- Testing: against different packages and environments.
