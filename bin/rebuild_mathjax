@@ -1,9 +1,0 @@
-#!/bin/sh
-
-set -Eeux
-
-cd node_modules/mathjax-full
-npm run compile
-cd ../..
-rm -rf .parcel-cache dist
-npm start
