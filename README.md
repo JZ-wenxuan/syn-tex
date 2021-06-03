@@ -1,4 +1,4 @@
-# [🔗SynTex Editor🔗](https://ayassaka.github.io/syn-tex/)
+# [🔗SynTeX Editor🔗](https://ayassaka.github.io/syn-tex/)
 
 ## What is this?
 
@@ -16,5 +16,6 @@ This project is based on:
 - Backward selection should map to closed braces and environments.
 - CSS work: resizable source and preview.
 - Handle `\left` and `\right`.
+- Retain the preview if compilation fails completely.
 - Fix: fast dragging sometimes doesn't trigger backward selection.
 - Testing: against different packages and environments.
