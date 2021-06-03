@@ -2,8 +2,7 @@
   "name": "syn-tex",
   "scripts": {
     "start": "parcel serve ./src/index.html",
-    "build": "rm -rf dist && parcel build ./src/index.html --public-url \"https://ayassaka.github.io/syn-tex/\"",
-    "deploy": "gh-pages -d dist"
+    "deploy": "rm -rf dist && parcel build ./src/index.html --public-url \"https://ayassaka.github.io/syn-tex/\" && gh-pages -d dist"
   },
   "dependencies": {
     "brace": "^0.11.1",
