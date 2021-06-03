@@ -2,7 +2,9 @@
 
 ## What is this?
 
-An interactive LaTeX equation editor with **selection syncing**. That is, you can select source code from the rendered equation, and vice versa.
+An interactive LaTeX equation editor with **selection syncing**.
+
+That is, you can select source code from the rendered equation, and vice versa.
 
 ## How is this done?
 
