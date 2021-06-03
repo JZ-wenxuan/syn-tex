@@ -1,4 +1,4 @@
-# [🔗SynTex🔗](https://ayassaka.github.io/syn-tex/)
+# [🔗SynTex Editor🔗](https://ayassaka.github.io/syn-tex/)
 
 ## What is this?
 

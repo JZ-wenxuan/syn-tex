@@ -1,0 +1,7 @@
+#!/bin/sh
+
+set -Eeux
+
+git checkout master
+git merge local-dev --no-edit
+git checkout local-dev
