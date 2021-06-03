@@ -198,10 +198,6 @@ preview.addEventListener("mousedown", e => {
   anchorEnd = parseInt(target.getAttribute('endloc'));
 
   selectSourceRange(anchorBegin, anchorEnd);
-  // let posBegin = indexToPosition(anchorBegin);
-  // source.moveCursorTo(posBegin.row, posBegin.column);
-  // let posEnd = indexToPosition(anchorEnd);
-  // sourceSelection.setSelectionAnchor(posEnd.row, posEnd.column);
 });
 
 preview.addEventListener("mouseup", e => {
@@ -239,5 +235,6 @@ preview.addEventListener("mouseleave", e => {
 
 // ************************ Start Rendering ************************
 
+source.setValue("% sample code\r\n\\begin{aligned}\r\n  & \\sum_{i=1}^{d}  \\frac{(\\theta_{1,i}-\\theta_{,i}^{\\ast } )^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{(\\theta_{t,i}-\\theta_{,i}^{\\ast } )^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\r\n  \\leq~ & \\sum_{i=1}^{d}  \\frac{D_\\infty^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{D_\\infty^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\r\n  =~&\\frac{D_\\infty^2}{2\\alpha(1-\\beta_1)}\\sum_{i=1}^{d}\\sqrt{T\\hat{v}_{T,i}}.\r\n\\end{aligned}")
 render();
 
