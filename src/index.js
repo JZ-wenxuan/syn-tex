@@ -156,6 +156,11 @@ function forwardSelection() {
   selectionEnd = e;
 }
 
+function clearSelection() {
+  source.clearSelection();
+  source.moveCursorTo(source.getSession().getLength(), 0);
+}
+
 function getPreviewTarget(target) {
   while (target.nodeName !== 'DIV') {
     let beginLoc = target.getAttribute('beginloc');
@@ -192,8 +197,7 @@ let anchorEnd = 0;
 preview.addEventListener("mousedown", e => {
   target = getPreviewTarget(e.target);
   if (!target) {
-    source.clearSelection();
-    source.moveCursorTo(source.getSession().getLength(), 0);
+    clearSelection();
   } else {
     selectingPreview = true;
   
@@ -243,5 +247,5 @@ preview.addEventListener("mouseleave", e => {
 
 // ************************ Start Rendering ************************
 
-source.setValue("% sample code\r\n\\begin{aligned}\r\n  & \\sum_{i=1}^{d}  \\frac{(\\theta_{1,i}-\\theta_{,i}^{\\ast } )^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{(\\theta_{t,i}-\\theta_{,i}^{\\ast } )^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\r\n  \\leq~ & \\sum_{i=1}^{d}  \\frac{D_\\infty^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{D_\\infty^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\r\n  =~&\\frac{D_\\infty^2}{2\\alpha(1-\\beta_1)}\\sum_{i=1}^{d}\\sqrt{T\\hat{v}_{T,i}}.\r\n\\end{aligned}")
+source.setValue("% This is a sample.\n% Try selecting something in either the source or the preview!\n\\begin{aligned}\n  & \\sum_{i=1}^{d}  \\frac{(\\theta_{1,i}-\\theta_{,i}^{\\ast } )^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{(\\theta_{t,i}-\\theta_{,i}^{\\ast } )^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\n  \\leq~ & \\sum_{i=1}^{d}  \\frac{D_\\infty^2\\sqrt{\\hat{v}_{1,i}}}{2\\alpha_1(1-\\beta_1)}+ \\sum_{i=1}^{d}\\sum_{t=2}^{T}\\frac{D_\\infty^2}{2(1-\\beta_1)}(\\frac{\\sqrt{\\hat{v}_{t,i}}}{\\alpha_t}-\\frac{\\sqrt{\\hat{v}_{t-1,i}}}{\\alpha_{t-1}})\\\\\n  =~&\\frac{D_\\infty^2}{2\\alpha(1-\\beta_1)}\\sum_{i=1}^{d}\\sqrt{T\\hat{v}_{T,i}}.\n\\end{aligned}")
 source.clearSelection();
