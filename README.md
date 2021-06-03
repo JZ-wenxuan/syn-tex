@@ -1,6 +1,6 @@
 # [SynTex](https://ayassaka.github.io/syn-tex/)
 
-An interactive TeX equation editor with selection mapping.
+An interactive TeX equation editor with selection syncing and more.
 
 ## TODO
 
